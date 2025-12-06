@@ -29,7 +29,8 @@ export interface DeleteNoteResponse {
 
 export async function fetchNotes(
   page: number,
-  search?: string
+  search?: string,
+  tag?: string
 ): Promise<FetchNotesResponse> {
   const params: Record<string, string | number> = {
     page,
@@ -38,6 +39,10 @@ export async function fetchNotes(
 
   if (search) {
     params.search = search;
+  }
+
+  if (tag && tag !== "all") {
+    params.tag = tag;
   }
 
   const response = await noteApi.get<FetchNotesResponse>("/notes", { params });
