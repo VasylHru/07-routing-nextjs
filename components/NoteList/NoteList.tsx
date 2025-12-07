@@ -9,7 +9,7 @@ interface NoteListProps {
   notes: Note[];
 }
 
- const NoteList = ({ notes }: NoteListProps) => {
+const NoteList = ({ notes }: NoteListProps) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -27,7 +27,7 @@ interface NoteListProps {
 
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <Link href={`/notes/${note.id}`} className={css.details}>
+            <Link href={`/notes/${note.id}`} className={css.detailsLink}>
               View details
             </Link>
             <button
@@ -43,4 +43,4 @@ interface NoteListProps {
   );
 };
 
-export default NoteList
+export default NoteList;
