@@ -1,14 +1,19 @@
 import Modal from "@/components/Modal/Modal";
-import NotePreviewClient from "./NotePreview.client";
+import NotePreview from "./NotePreview";
 
-export default function ModalNote({
-  params,
-}: {
-  params: { id: string };
-}) {
+
+type ModalPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+ async function ModalNote({ params }: ModalPageProps) {
+  const { id } = await params; 
+
   return (
     <Modal>
-      <NotePreviewClient id={params.id} />
+      <NotePreview id={id} />
     </Modal>
   );
 }
+
+export default ModalNote

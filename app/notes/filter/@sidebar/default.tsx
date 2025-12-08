@@ -1,5 +1,6 @@
+
 import SidebarNotes from "./SidebarNotes";
 
-export default function DefaultSidebar() {
+export default function SidebarSlot() {
   return <SidebarNotes />;
 }

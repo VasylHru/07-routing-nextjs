@@ -13,7 +13,6 @@ import Modal from "@/components/Modal/Modal";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import Loader from "@/components/Loader/Loader";
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
-
 import css from "@/components/NotesPage/NotesPage.module.css";
 
 export default function NotesClient() {
@@ -46,12 +45,11 @@ export default function NotesClient() {
             onPageChange={setPage}
           />
         )}
-
+        <div className={css.sidebar}></div>
         <button className={css.button} onClick={() => setIsModalOpen(true)}>
           Create note +
         </button>
       </header>
-
       {isLoading && <Loader />}
       {isError && <ErrorMessage message={(error as Error).message} />}
 

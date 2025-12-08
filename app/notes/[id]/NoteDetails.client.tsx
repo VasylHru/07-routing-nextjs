@@ -7,6 +7,7 @@ export default function NoteDetailsClient({ id }: { id: string }) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
   });
 
   if (isLoading) return <p>Loading, please wait...</p>;
@@ -16,7 +17,7 @@ export default function NoteDetailsClient({ id }: { id: string }) {
     <>
       <h2>{data.title}</h2>
       <p>{data.content}</p>
+      <p>{data.createdAt}</p>
     </>
   );
 }
-
