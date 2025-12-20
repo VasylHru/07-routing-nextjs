@@ -1,9 +1,10 @@
 import css from "@/components/SidebarNotes/SidebarNotes.module.css";
 import Link from "next/link";
 
-const TAGS = ["Todo", "Work", "Personal", "Meeting", "Shopping"];
+
 
 export default function SidebarNotes() {
+  const TAGS = ["Todo", "Work", "Personal", "Meeting", "Shopping"];
   return (
     <ul className={css.menuList}>
       <li className={css.menuItem}>
