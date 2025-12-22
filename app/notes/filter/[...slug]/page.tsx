@@ -19,7 +19,7 @@ export default async function NotesFilterPage({
   const normalizedTag = tagParam === "all" ? undefined : tagParam;
 
   await queryClient.prefetchQuery({
-    queryKey: ["filteredNotes", normalizedTag],
+   queryKey: ["notes", "filter", tag ?? "all"],
     queryFn: () => fetchNotes(1, undefined, normalizedTag),
   });
 

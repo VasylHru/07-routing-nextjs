@@ -14,9 +14,9 @@ const NoteList = ({ notes }: NoteListProps) => {
 
   const mutation = useMutation({
     mutationFn: deleteNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
+   onSuccess: () => {
+  queryClient.invalidateQueries();
+}
   });
   return (
     <ul className={css.list}>
