@@ -3,29 +3,66 @@ import {
   QueryClient,
   dehydrate,
 } from "@tanstack/react-query";
+import type { Metadata } from "next";
 import { fetchNotes } from "@/lib/api";
-import NotesClient from "@/app/notes/Notes.client";
+import NotesClient from "./Notes.client";
+import { notFound } from "next/navigation";
+
+type PageProp = {
+  params: Promise<{ slug: string[] }>;
+};
+
+export const generateMetadata = async ({
+  params,
+}: PageProp): Promise<Metadata> => {
+  const { slug } = await params;
+  const tagParam = slug?.[0];
+  const normalizedTag = tagParam === "all" ? `All notes` : tagParam;
+
+  return {
+    title: `${normalizedTag}`,
+    description: `Notes page filtered by tag ${normalizedTag}`,
+    openGraph: {
+      title: `${normalizedTag}`,
+      description: `Notes page filtered by tag ${normalizedTag}`,
+      url: `https://08-zustand-blush-seven.vercel.app/notes/filter/${tagParam}`,
+      images: [
+        {
+          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+          width: 1200,
+          height: 630,
+          alt: `NoteHub Page`,
+        },
+      ],
+    },
+  };
+};
 
 export default async function NotesFilterPage({
   params,
 }: {
-  params: Promise<{ tag: string[] }>;
+  params: Promise<{ slug: string[] }>;
 }) {
   const queryClient = new QueryClient();
 
-  const { tag } = await params;
+  const { slug } = await params;
 
-  const tagParam = tag?.[0];
+  const VALID_TAGS = ["all", "Todo", "Work", "Personal", "Meeting", "Shopping"];
+  const tagParam = slug?.[0];
   const normalizedTag = tagParam === "all" ? undefined : tagParam;
 
+  if (!VALID_TAGS.includes(tagParam)) {
+    notFound();
+  }
+
   await queryClient.prefetchQuery({
-   queryKey: ["notes", "filter", tag ?? "all"],
-    queryFn: () => fetchNotes(1, undefined, normalizedTag),
+    queryKey: ["notes", normalizedTag, 1, ""],
+    queryFn: () => fetchNotes(1, normalizedTag, ""),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient />
+      <NotesClient tag={normalizedTag} />
     </HydrationBoundary>
   );
 }
