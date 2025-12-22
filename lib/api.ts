@@ -12,6 +12,13 @@ export const noteApi = axios.create({
   },
 });
 
+export interface FetchNotesParams {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  tag?: string;
+}
+
 export interface CreateNoteParams {
   title: string;
   content: string;
@@ -27,27 +34,27 @@ export interface DeleteNoteResponse {
   note: Note;
 }
 
-export async function fetchNotes(
-  page: number,
-  search?: string,
-  tag?: string
-): Promise<FetchNotesResponse> {
-  const params: Record<string, string | number> = {
-    page,
-    perPage: 12,
-  };
+export const fetchNotes = async (
+  params: FetchNotesParams = {}
+): Promise<FetchNotesResponse> => {
+  const {
+    page = 1,
+    perPage = 12,
+    search,
+    tag,
+  } = params;
 
-  if (search) {
-    params.search = search;
-  }
+  const response = await noteApi.get<FetchNotesResponse>("/notes", {
+    params: {
+      page,
+      perPage,
+      ...(search && { search }),
+      ...(tag && tag !== "all" && { tag }),
+    },
+  });
 
-  if (tag && tag !== "all") {
-    params.tag = tag;
-  }
-
-  const response = await noteApi.get<FetchNotesResponse>("/notes", { params });
   return response.data;
-}
+};
 
 export async function fetchNoteById(id: string): Promise<Note> {
   const response = await noteApi.get<Note>(`/notes/${id}`);

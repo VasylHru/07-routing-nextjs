@@ -37,7 +37,6 @@ export const generateMetadata = async ({
     },
   };
 };
-
 export default async function NotesFilterPage({
   params,
 }: {
@@ -55,9 +54,14 @@ export default async function NotesFilterPage({
     notFound();
   }
 
+  const queryParams = {
+    page: 1,
+    tag: normalizedTag,
+  };
+
   await queryClient.prefetchQuery({
-    queryKey: ["notes", normalizedTag, 1, ""],
-    queryFn: () => fetchNotes(1, normalizedTag, ""),
+    queryKey: ["notes", queryParams],
+    queryFn: () => fetchNotes(queryParams),
   });
 
   return (
