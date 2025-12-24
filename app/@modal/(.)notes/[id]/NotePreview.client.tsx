@@ -1,38 +1,37 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api";
+import { fetchNotes } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import css from "@/components/NotePreview/NotePreview.module.css"
+import Modal from "@/components/Modal/Modal";
+import css from "@/components/NotePreview/NotePreview.module.css";
 
 export default function NotePreview({ id }: { id: string }) {
   const router = useRouter();
+  const queryParams = { page: 1 };
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
+  const { data } = useQuery({
+    queryKey: ["notes", queryParams],
+    queryFn: () => fetchNotes(queryParams),
+    refetchOnMount: false,
   });
 
-  if (isLoading) return <p>Loading…</p>;
-  if (isError || !data) return <p>Error loading note</p>;
+  const note = data?.notes.find(
+    note => note.id === Number(id)
+  );
+
+  if (!note) return null;
 
   return (
-    <div className={css.modalContent}>
-  <button className={css.closeButton} onClick={() => router.back()}>
-    ✕
-  </button>
-
-  <h2 className={css.title}>{data.title}</h2>
-
-  <p className={css.text}>{data.content}</p>
-
-  <p className={css.meta}>
-    Tag: <span className={css.tag}>{data.tag}</span>
-  </p>
-
-  <p className={css.meta}>
-    Created: {new Date(data.createdAt).toLocaleDateString()}
-  </p>
-</div>
+    <Modal onClose={() => router.back()}>
+      <div className={css.modalContent}>
+        <h2>{note.title}</h2>
+        <p>{note.content}</p>
+        <p>Tag: {note.tag}</p>
+        <p>
+          Created: {new Date(note.createdAt).toLocaleDateString()}
+        </p>
+      </div>
+    </Modal>
   );
 }

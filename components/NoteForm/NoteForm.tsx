@@ -10,16 +10,17 @@ import { createNote } from "@/lib/api";
 
 interface NoteFormProps {
   onCancel: () => void;
+  onSuccess?: () => void;
 }
 
-export const NoteForm = ({ onCancel }: NoteFormProps) => {
+export const NoteForm = ({ onCancel, onSuccess }: NoteFormProps) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      onCancel();
+      onSuccess?.(); 
     },
   });
 

@@ -3,38 +3,38 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
-
 import { fetchNotes } from "@/lib/api";
-import Link from "next/link";
 import NoteList from "@/components/NoteList/NoteList";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import Loader from "@/components/Loader/Loader";
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
+import Modal from "@/components/Modal/Modal";
+import NoteForm from "@/components/NoteForm/NoteForm";
 import css from "@/components/NotesPage/NotesPage.module.css";
 
-
 type NotesClientProps = {
-   tag?: string;
+  tag?: string;
 };
 
 export default function NotesClient({ tag }: NotesClientProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [debouncedSearch] = useDebounce(search,500);
+  const [debouncedSearch] = useDebounce(search, 500);
 
-const params = {
-  page,
-  search: debouncedSearch,
-  tag,
-};
+  const params = {
+    page,
+    search: debouncedSearch,
+    tag,
+  };
 
-const { data, isLoading, isError, error } = useQuery({
-  queryKey: ["notes", params],
-  queryFn: () => fetchNotes(params),
-  placeholderData: (prev) => prev,
-});
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["notes", params],
+    queryFn: () => fetchNotes(params),
+    placeholderData: (prev) => prev,
+  });
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -53,15 +53,25 @@ const { data, isLoading, isError, error } = useQuery({
             onPageChange={setPage}
           />
         )}
-        <div className={css.sidebar}></div>
-        <Link href="/notes/action/create">
-          <button className={css.button}>Create note +</button>
-        </Link>
+
+        <button className={css.button} onClick={() => setIsModalOpen(true)}>
+          Create note +
+        </button>
       </header>
+
       {isLoading && <Loader />}
       {isError && <ErrorMessage message={(error as Error).message} />}
 
       {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
+
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <NoteForm
+            onCancel={() => setIsModalOpen(false)}
+            onSuccess={() => setIsModalOpen(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }
