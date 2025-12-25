@@ -11,7 +11,7 @@ export default async function NotePage({ params }: PageProps) {
   const data = await fetchNotes({ page: 1 });
 
   const note = data.notes.find(
-    (note) => note.id === Number(id)
+    (note) => note.id === id
   );
 
   if (!note) notFound();

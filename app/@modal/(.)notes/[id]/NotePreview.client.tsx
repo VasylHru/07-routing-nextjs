@@ -17,7 +17,7 @@ export default function NotePreview({ id }: { id: string }) {
   });
 
   const note = data?.notes.find(
-    note => note.id === Number(id)
+    note => note.id === id
   );
 
   if (!note) return null;

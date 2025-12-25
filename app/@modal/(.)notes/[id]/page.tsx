@@ -22,7 +22,7 @@ export default async function ModalNote({ params }: Props) {
     queryFn: () => fetchNotes(queryParams),
   });
 
-  if (!data.notes.some(note => note.id === Number(id))) {
+  if (!data.notes.some(note => note.id === id)) {
     notFound();
   }
 
