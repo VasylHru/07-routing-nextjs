@@ -1,29 +1,54 @@
-import { fetchNotes } from "@/lib/api";
-import { notFound } from "next/navigation";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
+import { fetchNoteById } from '@/lib/api';
+import NoteDetailsClient from './NoteDetails.client';
+import { Metadata } from 'next';
 
-type PageProps = {
-  params: { id: string };
-};
+interface NoteDetailsProp {
+  params: Promise<{ id: string }>;
+}
+export async function generateMetadata({
+  params,
+}: NoteDetailsProp): Promise<Metadata> {
+  const { id } = await params;
 
-export default async function NotePage({ params }: PageProps) {
-  const { id } = params;
+  const note = await fetchNoteById(id);
+  return {
+    title: note.title,
+    description: note.content,
+    openGraph: {
+      title: note.title,
+      description: note.content,
+      url: `/notes/${id}`,
+      images: [
+        {
+          url: `/note/${id}`,
+          width: 1200,
+          height: 630,
+          alt: note.title,
+        },
+      ],
+    },
+  };
+}
+export default async function NoteDetails({ params }: NoteDetailsProp) {
+  const resolved = await params;
+  const id = resolved.id;
 
-  const data = await fetchNotes({ page: 1 });
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ['note', id],
+    queryFn: () => fetchNoteById(id),
+  });
 
-  const note = data.notes.find(
-    (note) => note.id === id
-  );
-
-  if (!note) notFound();
+  const dehydratedState = dehydrate(queryClient);
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>{note.title}</h1>
-      <p>{note.content}</p>
-      <p><strong>Tag:</strong> {note.tag}</p>
-      <p>
-        Created: {new Date(note.createdAt).toLocaleDateString()}
-      </p>
-    </main>
+    <HydrationBoundary state={dehydratedState}>
+      <NoteDetailsClient />
+    </HydrationBoundary>
   );
 }
